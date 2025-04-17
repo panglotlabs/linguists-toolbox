@@ -551,11 +551,14 @@
             
             html2canvas(clockElement, {
                 backgroundColor: null,
-                scale: 2 // Higher resolution
+                scale: 4, // 提高解析度
+                useCORS: true,
+                allowTaint: true
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'digital-clock.png';
-                link.href = canvas.toDataURL('image/png');
+                // 確保 PNG 格式以支援透明背景
+                link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
             });
         });
