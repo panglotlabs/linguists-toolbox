@@ -556,7 +556,9 @@
                 allowTaint: true
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'digital-clock.png';
+                const timeInput = document.getElementById('timeInput').value;
+                const [hours, minutes] = timeInput.split(':');
+                link.download = `digital-clock-${hours}-${minutes}.png`;
                 // 確保 PNG 格式以支援透明背景
                 link.href = canvas.toDataURL('image/png', 1.0);
                 link.click();
