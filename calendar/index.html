@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar - Under Construction</title>
+    <title>Calendar Image Generator</title>
     <style>
         :root {
             --primary-color: #333;
-            --accent-color: #5df75d;
+            --accent-color: #f05c50;
             --bg-color: #f5f5f5;
+            --weekend-color: #f05c50;
+            --header-bg: #f05c50;
+            --button-color: #2a9d8f;
+            --button-hover: #1f7a70;
         }
         
         * {
@@ -25,24 +29,405 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            text-align: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        p {
+        .input-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: 500;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            height: 44px;
+            line-height: 20px;
+        }
+        
+        button:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .calendar-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            aspect-ratio: 3/2;
+            max-width: 800px;
+        }
+        
+        .calendar {
+            background-color: white;
+            border-radius: 8px;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .calendar-header {
+            text-align: center;
+            background-color: var(--header-bg);
+            color: white;
+            padding: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: auto repeat(5, 1fr);
+            gap: 1px;
+            background-color: #eee;
+            padding: 1px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 6px 5px;
+            color: var(--primary-color);
+            background-color: white;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.2em;
-            color: #666;
+        }
+        
+        .calendar-day {
+            text-align: left;
+            padding: 8px 12px;
+            background-color: white;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            font-size: 1.4em;
+            font-weight: 500;
+            min-height: 40px;
+        }
+        
+        .calendar-day.weekend {
+            color: var(--weekend-color);
+        }
+        
+        .calendar-day.empty {
+            background-color: white;
+        }
+        
+        .download-btn {
+            background-color: var(--button-color);
+        }
+        
+        .download-btn:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .download-section {
+            text-align: center;
+            display: none;
+        }
+        
+        .language-switch {
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .lang-btn {
+            background-color: var(--button-color);
+            min-width: 100px;
+        }
+        
+        .lang-btn:hover {
+            background-color: var(--button-hover);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .calendar-header {
+                font-size: 20px;
+                height: 40px;
+            }
+            
+            .calendar-day-header {
+                font-size: 1.1em;
+                height: 30px;
+            }
+            
+            .calendar-day {
+                font-size: 1.2em;
+                min-height: 30px;
+                padding: 6px 8px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Calendar</h1>
-    <p>Under Construction</p>
+    <div class="container">
+        <h1 id="pageTitle">Calendar Image Generator</h1>
+        
+        <div class="language-switch">
+            <button type="button" onclick="switchLanguage('en')" class="lang-btn">English</button>
+            <button type="button" onclick="switchLanguage('zh')" class="lang-btn">中文</button>
+        </div>
+        
+        <div class="input-section">
+            <form id="calendarForm">
+                <div class="form-group">
+                    <label for="yearInput" id="yearLabel">Year:</label>
+                    <input type="number" id="yearInput" required min="1900" max="2100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="monthInput" id="monthLabel">Month:</label>
+                    <select id="monthInput" required>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <button type="submit" id="generateBtn">Generate Calendar</button>
+            </form>
+        </div>
+        
+        <div class="preview-section">
+            <h2 id="previewTitle">Preview</h2>
+            <div class="calendar-container">
+                <div class="calendar" id="calendarDisplay">
+                    <div class="calendar-header" id="calendarHeader"></div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+            </div>
+            
+            <div class="download-section" id="downloadSection">
+                <button id="downloadBtn" class="download-btn">Download Image</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const translations = {
+            en: {
+                pageTitle: 'Calendar Image Generator',
+                yearLabel: 'Year:',
+                monthLabel: 'Month:',
+                generateBtn: 'Generate Calendar',
+                previewTitle: 'Preview',
+                downloadBtn: 'Download Image',
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'],
+                weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+            },
+            zh: {
+                pageTitle: '月曆圖片產生器',
+                yearLabel: '年份：',
+                monthLabel: '月份：',
+                generateBtn: '產生月曆',
+                previewTitle: '預覽',
+                downloadBtn: '下載圖片',
+                months: ['一月', '二月', '三月', '四月', '五月', '六月', 
+                        '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                weekdays: ['日', '一', '二', '三', '四', '五', '六']
+            }
+        };
+        
+        let currentLang = 'en';
+        
+        function switchLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('pageTitle').textContent = translations[lang].pageTitle;
+            document.getElementById('yearLabel').textContent = translations[lang].yearLabel;
+            document.getElementById('monthLabel').textContent = translations[lang].monthLabel;
+            document.getElementById('generateBtn').textContent = translations[lang].generateBtn;
+            document.getElementById('previewTitle').textContent = translations[lang].previewTitle;
+            document.getElementById('downloadBtn').textContent = translations[lang].downloadBtn;
+            
+            // Update month select options
+            const monthSelect = document.getElementById('monthInput');
+            monthSelect.innerHTML = '';
+            translations[lang].months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                monthSelect.appendChild(option);
+            });
+            
+            // Update calendar if it's already displayed
+            const yearInput = document.getElementById('yearInput');
+            if (yearInput.value) {
+                generateCalendar(yearInput.value, monthSelect.value);
+            }
+        }
+        
+        function generateCalendar(year, month) {
+            const calendarHeader = document.getElementById('calendarHeader');
+            const calendarGrid = document.getElementById('calendarGrid');
+            
+            // Clear previous calendar
+            calendarGrid.innerHTML = '';
+            
+            // Set header (month only)
+            const monthName = translations[currentLang].months[month - 1];
+            calendarHeader.textContent = monthName;
+            
+            // Add weekday headers
+            translations[currentLang].weekdays.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Get first day of month and total days
+            const firstDay = new Date(year, month - 1, 1);
+            const lastDay = new Date(year, month, 0);
+            const totalDays = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            // Calculate total weeks needed
+            const totalWeeks = Math.ceil((startingDay + totalDays) / 7);
+            
+            // Update grid template if needed
+            calendarGrid.style.gridTemplateRows = `auto repeat(${totalWeeks}, 1fr)`;
+            
+            // Add empty days
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days
+            for (let day = 1; day <= totalDays; day++) {
+                const dayElement = document.createElement('div');
+                const date = new Date(year, month - 1, day);
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                dayElement.className = `calendar-day${isWeekend ? ' weekend' : ''}`;
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Add remaining empty days to complete the grid
+            const totalCells = totalWeeks * 7;
+            const remainingDays = totalCells - (startingDay + totalDays);
+            for (let i = 0; i < remainingDays; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Show download section
+            document.getElementById('downloadSection').style.display = 'block';
+        }
+        
+        // Handle form submission
+        document.getElementById('calendarForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const year = document.getElementById('yearInput').value;
+            const month = document.getElementById('monthInput').value;
+            generateCalendar(year, month);
+        });
+        
+        // Handle download button click
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const calendarElement = document.querySelector('.calendar');
+            
+            html2canvas(calendarElement, {
+                backgroundColor: null,
+                scale: 4,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const year = document.getElementById('yearInput').value;
+                const month = document.getElementById('monthInput').value;
+                link.download = `calendar-${year}-${month}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        });
+        
+        // Initialize with current date and English language
+        window.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            document.getElementById('yearInput').value = now.getFullYear();
+            switchLanguage('en');
+            document.getElementById('monthInput').value = now.getMonth() + 1;
+            generateCalendar(now.getFullYear(), now.getMonth() + 1);
+        });
+    </script>
 </body>
 </html> 
