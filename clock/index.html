@@ -386,7 +386,6 @@
                     <input type="time" id="timeInput" required>
                 </div>
                 
-                <button type="submit">Generate Clock</button>
             </form>
         </div>
         
@@ -542,27 +541,27 @@
         // Handle form submission
         document.getElementById('clockForm').addEventListener('submit', function(e) {
             e.preventDefault();
+        });
+
+        // 監聽時間輸入變化自動生成時鐘
+        document.getElementById('timeInput').addEventListener('input', function() {
+            const timeInput = this.value;
+            const format = '24';
             
-            const timeInput = document.getElementById('timeInput').value;
-            const format = '24'; // 直接使用 24 小時格式
-            
-            if (!timeInput) {
-                alert('Please enter a time');
-                return;
+            if (timeInput) {
+                const formattedTime = formatTime(timeInput, format);
+                
+                // Try to use digital font, fall back to segments if unavailable
+                const useFontAvailable = isFontAvailable('Digital-7');
+                if (useFontAvailable) {
+                    renderFontClock(formattedTime);
+                } else {
+                    renderSegmentClock(formattedTime);
+                }
+                
+                // Show download section
+                document.getElementById('downloadSection').style.display = 'block';
             }
-            
-            const formattedTime = formatTime(timeInput, format);
-            
-            // Try to use digital font, fall back to segments if unavailable
-            const useFontAvailable = isFontAvailable('Digital-7');
-            if (useFontAvailable) {
-                renderFontClock(formattedTime);
-            } else {
-                renderSegmentClock(formattedTime);
-            }
-            
-            // Show download section
-            document.getElementById('downloadSection').style.display = 'block';
         });
         
         // Handle download button click

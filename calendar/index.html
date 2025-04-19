@@ -278,7 +278,6 @@
                     </select>
                 </div>
                 
-                <button type="submit" id="generateBtn">Generate Calendar</button>
             </form>
         </div>
         
@@ -331,12 +330,12 @@
             document.getElementById('pageTitle').textContent = translations[lang].pageTitle;
             document.getElementById('yearLabel').textContent = translations[lang].yearLabel;
             document.getElementById('monthLabel').textContent = translations[lang].monthLabel;
-            document.getElementById('generateBtn').textContent = translations[lang].generateBtn;
             document.getElementById('previewTitle').textContent = translations[lang].previewTitle;
             document.getElementById('downloadBtn').textContent = translations[lang].downloadBtn;
             
             // Update month select options
             const monthSelect = document.getElementById('monthInput');
+            const currentMonth = monthSelect.value || (new Date().getMonth() + 1);
             monthSelect.innerHTML = '';
             translations[lang].months.forEach((month, index) => {
                 const option = document.createElement('option');
@@ -344,6 +343,7 @@
                 option.textContent = month;
                 monthSelect.appendChild(option);
             });
+            monthSelect.value = currentMonth;
             
             // Update calendar if it's already displayed
             const yearInput = document.getElementById('yearInput');
@@ -416,9 +416,23 @@
         // Handle form submission
         document.getElementById('calendarForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const year = document.getElementById('yearInput').value;
+        });
+
+        // 監聽輸入變化自動生成日曆
+        document.getElementById('yearInput').addEventListener('input', function() {
+            const year = this.value;
             const month = document.getElementById('monthInput').value;
-            generateCalendar(year, month);
+            if (year && month) {
+                generateCalendar(year, month);
+            }
+        });
+
+        document.getElementById('monthInput').addEventListener('change', function() {
+            const year = document.getElementById('yearInput').value;
+            const month = this.value;
+            if (year && month) {
+                generateCalendar(year, month);
+            }
         });
         
         // Handle download button click
@@ -443,10 +457,13 @@
         // Initialize with current date and English language
         window.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
-            document.getElementById('yearInput').value = now.getFullYear();
-            switchLanguage('en');
-            document.getElementById('monthInput').value = now.getMonth() + 1;
-            generateCalendar(now.getFullYear(), now.getMonth() + 1);
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            
+            document.getElementById('yearInput').value = currentYear;
+            switchLanguage('en'); // 這會初始化月份選擇器
+            document.getElementById('monthInput').value = currentMonth;
+            generateCalendar(currentYear, currentMonth);
         });
     </script>
 </body>
