@@ -233,9 +233,29 @@
                 font-size: 24px;
             }
         }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .home-button:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
+    <a href="../index.html" class="home-button">Back to Home</a>
     <div class="container">
         <h1 id="pageTitle">Calendar Image Generator</h1>
         
