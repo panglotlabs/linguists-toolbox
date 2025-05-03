@@ -153,16 +153,16 @@
         
         /* Digital-7 font */
         @font-face {
-            font-family: 'Digital-7';
-            src: url('digital-7.ttf') format('truetype');
+            font-family: 'Digital-7 (mono)';
+            src: url('digital-7 (mono).ttf') format('truetype');
             /* If you have the font file in the same directory, use this */
         }
         
         /* Backup online version if local file is not available */
-        @import url('https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/digital-7.min.css');
+        @import url('https://cdn.jsdelivr.net/npm/@xz/fonts@1/serve/digital-7 (mono).min.css');
         
         .clock-time {
-            font-family: 'Digital-7', monospace;
+            font-family: 'Digital-7 (mono)', monospace;
             font-size: 90px;
             color: var(--accent-color);
             text-align: center;
@@ -552,7 +552,7 @@
                 const formattedTime = formatTime(timeInput, format);
                 
                 // Try to use digital font, fall back to segments if unavailable
-                const useFontAvailable = isFontAvailable('Digital-7');
+                const useFontAvailable = isFontAvailable('Digital-7 (mono)');
                 if (useFontAvailable) {
                     renderFontClock(formattedTime);
                 } else {
@@ -594,7 +594,7 @@
             document.getElementById('timeInput').value = currentTime;
             
             // Try to use digital font first
-            if (isFontAvailable('Digital-7')) {
+            if (isFontAvailable('Digital-7 (mono)')) {
                 renderFontClock(currentTime);
             } else {
                 renderSegmentClock(currentTime);
