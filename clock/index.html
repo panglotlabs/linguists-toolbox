@@ -118,7 +118,7 @@
         }
         
         .preview-section {
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             gap: 20px;
@@ -382,6 +382,8 @@
                     <label for="timeInput">Enter Time:</label>
                     <input type="time" id="timeInput" required>
                 </div>
+
+                <button type="submit" class="generate-btn">Generate Image</button>
                 
             </form>
         </div>
@@ -543,6 +545,8 @@
                     renderSegmentClock(timeString);
                 }
                 
+                // 顯示預覽區域和下載按鈕
+                document.querySelector('.preview-section').style.display = 'flex';
                 document.getElementById('downloadSection').style.display = 'block';
             } catch (error) {
                 console.log('更新時鐘顯示失敗:', error);
@@ -553,22 +557,7 @@
         // Handle form submission
         document.getElementById('clockForm').addEventListener('submit', function(e) {
             e.preventDefault();
-        });
-
-        // Initialize with current time
-        window.addEventListener('DOMContentLoaded', function() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const currentTime = `${hours}:${minutes}`;
-            
-            document.getElementById('timeInput').value = currentTime;
-            updateClockDisplay(currentTime);
-        });
-
-        // Handle time input change
-        document.getElementById('timeInput').addEventListener('input', function() {
-            const timeInput = this.value;
+            const timeInput = document.getElementById('timeInput').value;
             const format = '24';
             
             if (timeInput) {
@@ -576,6 +565,16 @@
                 updateClockDisplay(formattedTime);
             }
         });
+
+        // 移除自動初始化時間和顯示的部分
+        window.addEventListener('DOMContentLoaded', function() {
+            // 只預加載字體，不顯示時鐘
+            document.fonts.load('1em digital-7-mono').then(() => {
+                console.log('字體預加載完成');
+            });
+        });
+
+        // 移除時間輸入的即時更新監聽器
         
         // Handle download button click
         document.getElementById('downloadBtn').addEventListener('click', function() {
