@@ -419,20 +419,14 @@
         ];
         
         // Check if the digital font is available
-        function isFontAvailable(fontName) {
-            // This is a simple check - not 100% reliable
-            const testElement = document.createElement('span');
-            testElement.style.fontFamily = `"${fontName}", monospace`;
-            testElement.style.visibility = 'hidden';
-            testElement.innerText = 'Test';
-            document.body.appendChild(testElement);
-            
-            const width = testElement.offsetWidth;
-            testElement.style.fontFamily = 'monospace';
-            const compareWidth = testElement.offsetWidth;
-            
-            document.body.removeChild(testElement);
-            return width !== compareWidth;
+        async function isFontAvailable(fontName) {
+            try {
+                await document.fonts.load(`1em ${fontName}`);
+                return document.fonts.check(`1em ${fontName}`);
+            } catch (e) {
+                console.log('字體檢查失敗:', e);
+                return false;
+            }
         }
         
         // Function to create a segment-based digit
@@ -535,6 +529,27 @@
             }
         }
         
+        // Function to update clock display
+        async function updateClockDisplay(timeString) {
+            try {
+                await document.fonts.ready;
+                const fontAvailable = await isFontAvailable('digital-7-mono');
+                
+                if (fontAvailable) {
+                    console.log('使用數字字體顯示');
+                    renderFontClock(timeString);
+                } else {
+                    console.log('使用七段顯示器顯示');
+                    renderSegmentClock(timeString);
+                }
+                
+                document.getElementById('downloadSection').style.display = 'block';
+            } catch (error) {
+                console.log('更新時鐘顯示失敗:', error);
+                renderSegmentClock(timeString);
+            }
+        }
+        
         // Handle form submission
         document.getElementById('clockForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -542,37 +557,13 @@
 
         // Initialize with current time
         window.addEventListener('DOMContentLoaded', function() {
-            // 等待字體載入
-            document.fonts.ready.then(async () => {
-                console.log('字體已完全載入');
-                
-                const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const currentTime = `${hours}:${minutes}`;
-                
-                document.getElementById('timeInput').value = currentTime;
-                
-                // Try to use digital font first
-                if (isFontAvailable('digital-7-mono')) {
-                    renderFontClock(currentTime);
-                } else {
-                    renderSegmentClock(currentTime);
-                }
-                
-                // Show download section
-                document.getElementById('downloadSection').style.display = 'block';
-            }).catch(error => {
-                console.log('字體載入失敗，使用備用顯示方式');
-                const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const currentTime = `${hours}:${minutes}`;
-                
-                document.getElementById('timeInput').value = currentTime;
-                renderSegmentClock(currentTime);
-                document.getElementById('downloadSection').style.display = 'block';
-            });
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${hours}:${minutes}`;
+            
+            document.getElementById('timeInput').value = currentTime;
+            updateClockDisplay(currentTime);
         });
 
         // Handle time input change
@@ -582,19 +573,7 @@
             
             if (timeInput) {
                 const formattedTime = formatTime(timeInput, format);
-                
-                // 確保字體已載入再渲染
-                document.fonts.ready.then(() => {
-                    // Try to use digital font, fall back to segments if unavailable
-                    if (isFontAvailable('digital-7-mono')) {
-                        renderFontClock(formattedTime);
-                    } else {
-                        renderSegmentClock(formattedTime);
-                    }
-                    
-                    // Show download section
-                    document.getElementById('downloadSection').style.display = 'block';
-                });
+                updateClockDisplay(formattedTime);
             }
         });
         
